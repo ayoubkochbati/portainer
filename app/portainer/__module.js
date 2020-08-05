@@ -12,7 +12,7 @@ async function initAuthentication(authManager, Authentication, $rootScope, $stat
     }
   });
 
-  await Authentication.init();
+  return await Authentication.init();
 }
 
 function initAnalytics(Analytics, $rootScope) {
@@ -34,38 +34,26 @@ angular.module('portainer.app', ['portainer.oauth']).config([
       name: 'root',
       abstract: true,
       resolve: {
-        initStateManager: [
-          'StateManager',
-          'Authentication',
-          'Notifications',
-          'Analytics',
-          'authManager',
-          '$rootScope',
-          '$state',
-          '$async',
-          '$q',
-          (StateManager, Authentication, Notifications, Analytics, authManager, $rootScope, $state, $async, $q) => {
-            const deferred = $q.defer();
+        initStateManager: /* @ngInject */ function initStateManager($async, StateManager, Authentication, Notifications, Analytics, authManager, $rootScope, $state) {
+          return $async(async () => {
             const appState = StateManager.getState();
             if (!appState.loading) {
-              deferred.resolve();
-            } else {
-              StateManager.initialize()
-                .then(function success(state) {
-                  if (state.application.analytics) {
-                    initAnalytics(Analytics, $rootScope);
-                  }
-                  return $async(initAuthentication, authManager, Authentication, $rootScope, $state);
-                })
-                .then(() => deferred.resolve())
-                .catch(function error(err) {
-                  Notifications.error('Failure', err, 'Unable to retrieve application settings');
-                  deferred.reject(err);
-                });
+              return;
             }
-            return deferred.promise;
-          },
-        ],
+            try {
+              const loggedIn = await initAuthentication(authManager, Authentication, $rootScope, $state);
+              const state = await StateManager.initialize();
+              if (state.application.analytics) {
+                initAnalytics(Analytics, $rootScope);
+              }
+              if (!loggedIn) {
+                $state.go('portainer.auth');
+              }
+            } catch (err) {
+              Notifications.error('Failure', err, 'Unable to retrieve application settings');
+            }
+          });
+        },
       },
       views: {
         'sidebar@': {
