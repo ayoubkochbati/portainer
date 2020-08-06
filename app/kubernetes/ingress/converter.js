@@ -25,7 +25,7 @@ export class KubernetesIngressConverter {
     const res = new KubernetesIngress();
     res.Name = data.metadata.name;
     res.Namespace = data.metadata.namespace;
-    res.IngressClass =
+    res.IngressClassName =
       data.metadata.annotations && data.metadata.annotations[KubernetesIngressClassAnnotation]
         ? data.metadata.annotations[KubernetesIngressClassAnnotation]
         : data.spec.ingressClassName;
@@ -59,7 +59,7 @@ export class KubernetesIngressConverter {
     const res = new KubernetesIngressCreatePayload();
     res.metadata.name = data.Name;
     res.metadata.namespace = data.Namespace;
-    res.metadata.annotations[KubernetesIngressClassAnnotation] = data.IngressClass;
+    res.metadata.annotations[KubernetesIngressClassAnnotation] = data.IngressClassName;
     const groups = _.groupBy(data.Rules, 'Host');
     const rules = _.map(groups, (rules, host) => {
       const rule = new KubernetesIngressRuleCreatePayload();

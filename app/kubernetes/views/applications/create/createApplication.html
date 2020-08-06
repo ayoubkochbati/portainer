@@ -1017,7 +1017,7 @@
                       class="form-control"
                       name="ingress_class_{{ $index }}"
                       ng-model="publishedPort.Ingress"
-                      ng-options="ingress as (ingress.IngressClass ? ingress.IngressClass : ingress.Name) for ingress in ctrl.filteredIngresses"
+                      ng-options="ingress as (ingress.IngressClassName ? ingress.IngressClassName : ingress.Name) for ingress in ctrl.filteredIngresses"
                       required
                     >
                     </select>

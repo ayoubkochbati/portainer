@@ -3,7 +3,7 @@ export function KubernetesIngress() {
     Name: '',
     Namespace: '',
     Rules: [],
-    IngressClass: '',
+    IngressClassName: '',
   };
 }
 
