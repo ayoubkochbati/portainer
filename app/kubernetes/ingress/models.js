@@ -9,6 +9,7 @@ export function KubernetesIngress() {
 
 export function KubernetesIngressRule() {
   return {
+    ParentIngressName: '',
     ServiceName: '',
     Host: '',
     IP: '',
